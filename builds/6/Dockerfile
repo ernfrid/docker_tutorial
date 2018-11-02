@@ -1,37 +1,14 @@
-FROM ubuntu:18.04 as builder-base
-RUN  buildDeps=' \
+FROM ubuntu:18.04 as samtools-builder
+ARG SAMTOOLS_VERSION=1.9
+ARG SAMTOOLS_DIR=/opt/ccdg/build/samtools-${SAMTOOLS_VERSION}
+WORKDIR ${SAMTOOLS_DIR}
+RUN buildDeps=' \
         build-essential \
         git-core \
         bzip2 \
         curl \
         ca-certificates \
         zlib1g \
-        ' \
-    && apt-get update -qq \
-    && apt-get -y install \
-        --no-install-recommends \
-        $buildDeps
-
-FROM builder-base as libdeflate-builder
-
-ARG LIBDEFLATE_VERSION=1.0
-WORKDIR /opt/ccdg/build/libdeflate
-
-RUN git clone https://github.com/ebiggers/libdeflate.git \
-    && cd libdeflate \
-    && git checkout v${LIBDEFLATE_VERSION} \
-    && make -j 2 CFLAGS='-fPIC -O3' libdeflate.a \
-    && export DESTDIR=../artifacts \
-    && mkdir -p $DESTDIR \
-    && install -Dm644 -t ${DESTDIR}/lib libdeflate.a \
-    && install -Dm644 -t ${DESTDIR}/include libdeflate.h
-
-# Build dependencies
-FROM builder-base as samtools-builder
-ARG SAMTOOLS_VERSION=1.9
-ARG SAMTOOLS_DIR=/opt/ccdg/build/samtools-${SAMTOOLS_VERSION}
-WORKDIR ${SAMTOOLS_DIR}
-RUN buildDeps=' \
         libbz2-dev \
         liblzma-dev \
         libssl-dev \
