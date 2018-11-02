@@ -157,6 +157,7 @@ root@cc17672ed879:/# exit
 ```
 
 10. Commit your addition. Note that you shouldn't generally do this as your method to create images. Making Dockerfiles is the way to go for that. This is a nice example though.
+```
 $ docker commit 8957acebc6f4
 sha256:dbd5a62e1861035c7f4438e6641f3d81f03818968d60713084f24b682dca8220
 $ docker images
